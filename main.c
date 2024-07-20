@@ -19,6 +19,11 @@
 #endif // CIRCULAR_DOUBLY_LINKED_LIST
 #include "list.h"
 
+#define M_WIDTH (GetMonitorWidth(0))
+#define M_HEIGHT (GetMonitorHeight(0))
+#define W_WIDTH M_WIDTH
+#define W_HEIGHT M_HEIGHT
+
 void free_data(void *data) {
   if (data) {
     free((char *)data);
@@ -114,11 +119,6 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
   (void)closedir(dp);
   return cursor;
 }
-
-#define M_WIDTH (GetMonitorWidth(0))
-#define M_HEIGHT (GetMonitorHeight(0))
-#define W_WIDTH M_WIDTH
-#define W_HEIGHT M_HEIGHT
 
 void load_image(CDLLNode *img_paths, Image *img, Texture2D *texture) {
   assert(img && texture && "unexpected NULL");
@@ -238,22 +238,28 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
 
 void help(char *prog_name) {
   printf("NAME\n\t%s - image viewer\n", prog_name);
+  printf("\nDESCRIPTION\n\t%s is a simple image viewer written in C using "
+         "raylib\n",
+         prog_name);
   printf("\nSYNOPSIS\n\t%s <dir|file> ...\n", prog_name);
   printf("\nOPTIONS\n");
   printf("\t%s\n\t\tprint this help\n", "-h, -help, --help, help");
   printf("\nUSAGE\n");
+  printf("\t* q\n\t\tclose the application\n");
+  printf("\t* LEFT_MOUSE_BUTTON\n\t\tgo to previous image\n");
+  printf("\t* MIDDLE_MOUSE_BUTTON\n\t\tdrag current image\n");
+  printf("\t* scroll MIDDLE_MOUSE_BUTTON\n\t\tzoom in/out current image\n");
+  printf("\t* RIGHT_MOUSE_BUTTON\n\t\tgo to next image\n");
+  printf("\nNOTES\n");
   printf("\t* JPG are supported only when raylib is configure and rebuilt with "
          "the jpg option enabled; see README\n");
-  printf("\t* q - close the application\n");
-  printf("\t* LEFT_MOUSE_BUTTON - go to previous image\n");
-  printf("\t* MIDDLE_MOUSE_BUTTON - drag current image\n");
-  printf("\t* MIDDLE_MOUSE_BUTTON scroll - zoom current image\n");
-  printf("\t* RIGHT_MOUSE_BUTTON - go to next image\n");
   printf("\nEXAMPLES\n");
-  printf("\t* %s -h\n", prog_name);
+  printf("\t* %s help\n", prog_name);
   printf("\t* %s $HOME/Pictures\n", prog_name);
   printf("\t* %s $HOME/Pictures/example.png\n", prog_name);
-  printf("\t* %s $HOME/Pictures/example.jpg\n", prog_name);
+  printf(
+      "\t* %s $HOME/Pictures/example.jpg # requires jpg support; see README\n",
+      prog_name);
   printf("\nAUTHOR\n");
   printf("\tMeelis Utt (meelis.utt@gmail.com)\n");
 }
