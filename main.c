@@ -28,8 +28,8 @@ void free_data(void *data) {
 bool cmp_data(void *a, void *b) { return strcmp((char *)a, (char *)b) == 0; }
 
 void print_data(CDLLNode *node) {
-  printf("(%p) data:'%s' prev:%p next:%p\n", node, (char *)(node->data),
-         node->prev, node->next);
+  printf("(%p) data:'%s' prev:%p next:%p\n", (void *)node, (char *)(node->data),
+         (void *)node->prev, (void *)node->next);
 }
 
 CDLLNode *get_files(CDLLNode *cursor, char *path) {
@@ -93,44 +93,58 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
   return cursor;
 }
 
-int main(int argc, char **argv) {
+#define M_WIDTH (GetMonitorWidth(0))
+#define M_HEIGHT (GetMonitorHeight(0))
+#define W_WIDTH M_WIDTH
+#define W_HEIGHT M_HEIGHT
 
-  char *prog_name = shift(&argc, &argv);
+void load_image(CDLLNode *img_paths, Image *img, Texture2D *texture) {
+  assert(img && texture && "unexpected NULL");
+  UnloadImage(*img);
+  UnloadTexture(*texture);
+  *img = LoadImage((char *)img_paths->data);
+  assert(IsImageReady(*img));
+  *texture = LoadTextureFromImage(*img);
+  SetWindowPosition(0, 0);
+  // float clamped_width = Clamp(texture->width, 0, W_WIDTH);
+  // float clamped_height = Clamp(texture->height, 0, W_HEIGHT);
+  // SetWindowSize(clamped_width, clamped_height);
+  // SetWindowPosition(M_WIDTH / 2 - clamped_width / 2,
+  //                   M_HEIGHT / 2 - clamped_height / 2);
+}
 
-  CDLLNode *cdll = NULL;
-  for (; argc;) {
-    char *arg = shift(&argc, &argv);
-    cdll = get_files(cdll, arg);
+void vv(char *prog_name, CDLLNode *img_paths) {
+  if (!img_paths) {
+    return;
   }
-  cdll_list(cdll);
-  cdll_nodes_free(cdll);
-
-  return 0;
-
-  InitWindow(800, 600, prog_name);
+  InitWindow(W_WIDTH, W_HEIGHT, prog_name);
   SetTargetFPS(30);
   SetWindowMonitor(0);
-  SetWindowPosition(GetMonitorWidth(0) / 2 - 400,
-                    GetMonitorHeight(0) / 2 - 300);
+
   SetWindowState(FLAG_WINDOW_RESIZABLE);
   SetExitKey(KEY_Q);
 
-  Image img = LoadImage("./test2.png");
-  assert(IsImageReady(img));
-
-  Texture2D texture = LoadTextureFromImage(img);
-  SetWindowSize(texture.width, texture.height);
-
+  float zoom_orig = 1;
   float zoom = 1;
-  Vector2 target = {GetScreenWidth() * 0.5, GetScreenHeight() * 0.5};
+  Vector2 target_orig = {GetScreenWidth() * 0.5, GetScreenHeight() * 0.5};
+  Vector2 target = target_orig;
   Vector2 offset = {GetScreenWidth() * 0.5, GetScreenHeight() * 0.5};
   Vector2 mouse = {0};
   Vector2 mouse_offset = {0};
+  Image *img = calloc(1, sizeof(Image));
+  Texture2D texture = {0};
+  size_t image_count = cdll_list_len(img_paths);
+  size_t image_cursor = 0;
+  char text[16];
+
+  load_image(img_paths, img, &texture);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
     {
       ClearBackground(BLACK);
+
+      assert(texture.id && "unexpected empty");
 
       Camera2D cam = {
           .target = target,
@@ -164,6 +178,21 @@ int main(int argc, char **argv) {
         target = Vector2Subtract(target, mouse);
         target = Vector2Add(target, mouse_offset);
 
+      } else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        image_cursor = (image_cursor - 1) % image_count;
+        if (image_cursor < 0) {
+          image_cursor = image_count - image_cursor;
+        }
+        img_paths = img_paths->prev;
+        load_image(img_paths, img, &texture);
+        zoom = zoom_orig;
+        target = target_orig;
+      } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+        image_cursor = (image_cursor + 1) % image_count;
+        img_paths = img_paths->next;
+        load_image(img_paths, img, &texture);
+        zoom = zoom_orig;
+        target = target_orig;
       } else {
         mouse_offset = (Vector2){0};
       }
@@ -172,11 +201,33 @@ int main(int argc, char **argv) {
       cam.zoom = zoom;
 
       BeginMode2D(cam);
-      { DrawTexture(texture, 0, 0, WHITE); }
+      {
+        DrawTexture(texture, 0, 0, WHITE);
+        memset(text, '\0', sizeof(text));
+        sprintf(text, "%lu/%lu", image_cursor + 1, image_count);
+        DrawText(text, 0, 0, 16, RED);
+      }
       EndMode2D();
     }
     EndDrawing();
   }
-  UnloadImage(img);
-  UnloadTexture(texture);
+  if (img) {
+    free(img);
+  }
+  CloseWindow();
+  return;
+}
+
+int main(int argc, char **argv) {
+
+  char *prog_name = shift(&argc, &argv);
+
+  CDLLNode *cdll = NULL;
+  for (; argc;) {
+    char *arg = shift(&argc, &argv);
+    cdll = get_files(cdll, arg);
+  }
+  cdll_list(cdll);
+  vv(prog_name, cdll);
+  cdll_nodes_free(cdll);
 }
