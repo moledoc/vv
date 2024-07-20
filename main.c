@@ -43,7 +43,7 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     printf("dir -- %s\n", path);
     break;
   case S_IFREG:
-    if (strstr(path, ".png") == NULL) {
+    if (strstr(path, ".png") == NULL && strstr(path, ".jpg") == NULL) {
       printf("ignoring %s\n", path);
       return cursor;
     }
@@ -71,7 +71,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     if (strcmp(".", ep->d_name) == 0 || strcmp("..", ep->d_name) == 0) {
       continue;
     }
-    if (strstr(ep->d_name, ".png") == NULL) {
+    if (strstr(ep->d_name, ".png") == NULL &&
+        strstr(ep->d_name, ".jpg") == NULL) {
       printf("ignoring %s\n", ep->d_name);
       continue;
     }
@@ -115,7 +116,7 @@ void load_image(CDLLNode *img_paths, Image *img, Texture2D *texture) {
   SetWindowPosition(0, 0);
 }
 
-void vv(char *prog_name, CDLLNode *img_paths) {
+void viewer(char *prog_name, CDLLNode *img_paths) {
   if (!img_paths) {
     return;
   }
@@ -146,7 +147,7 @@ void vv(char *prog_name, CDLLNode *img_paths) {
     {
       ClearBackground(BLACK);
 
-      assert(texture.id && "unexpected empty");
+      assert(texture.id >= 0 && "unexpected empty");
 
       Camera2D cam = {
           .target = target,
@@ -231,6 +232,6 @@ int main(int argc, char **argv) {
     cdll = get_files(cdll, arg);
   }
   cdll_list(cdll);
-  vv(prog_name, cdll);
+  viewer(prog_name, cdll);
   cdll_nodes_free(cdll);
 }
