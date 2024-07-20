@@ -43,6 +43,10 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     printf("dir -- %s\n", path);
     break;
   case S_IFREG:
+    if (strstr(path, ".png") == NULL) {
+      printf("ignoring %s\n", path);
+      return cursor;
+    }
     printf("file -- %s\n", path);
     char *new_path = calloc(path_size + 1, sizeof(char));
     memcpy(new_path, path, path_size);
@@ -67,7 +71,10 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     if (strcmp(".", ep->d_name) == 0 || strcmp("..", ep->d_name) == 0) {
       continue;
     }
-
+    if (strstr(ep->d_name, ".png") == NULL) {
+      printf("ignoring %s\n", ep->d_name);
+      continue;
+    }
     size_t ep_name_len = strlen(ep->d_name);
     size_t new_path_size = path_size + ep_name_len + 1;
     char *new_path = calloc(new_path_size + 1, sizeof(char));
@@ -106,11 +113,6 @@ void load_image(CDLLNode *img_paths, Image *img, Texture2D *texture) {
   assert(IsImageReady(*img));
   *texture = LoadTextureFromImage(*img);
   SetWindowPosition(0, 0);
-  // float clamped_width = Clamp(texture->width, 0, W_WIDTH);
-  // float clamped_height = Clamp(texture->height, 0, W_HEIGHT);
-  // SetWindowSize(clamped_width, clamped_height);
-  // SetWindowPosition(M_WIDTH / 2 - clamped_width / 2,
-  //                   M_HEIGHT / 2 - clamped_height / 2);
 }
 
 void vv(char *prog_name, CDLLNode *img_paths) {
@@ -135,7 +137,7 @@ void vv(char *prog_name, CDLLNode *img_paths) {
   Texture2D texture = {0};
   size_t image_count = cdll_list_len(img_paths);
   size_t image_cursor = 0;
-  char text[16];
+  char text[256];
 
   load_image(img_paths, img, &texture);
 
@@ -154,7 +156,7 @@ void vv(char *prog_name, CDLLNode *img_paths) {
 
       float wheel = GetMouseWheelMove();
       if (wheel > 0) {
-        zoom *= 1.1;
+        zoom += 0.1;
         mouse = GetScreenToWorld2D(GetMousePosition(), cam);
         if (!mouse_offset.x && !mouse_offset.y) {
           mouse_offset = mouse;
@@ -162,7 +164,7 @@ void vv(char *prog_name, CDLLNode *img_paths) {
         target = Vector2Subtract(target, mouse);
         target = Vector2Add(target, mouse_offset);
       } else if (wheel < 0) {
-        zoom *= 0.9;
+        zoom -= 0.1;
         mouse = GetScreenToWorld2D(GetMousePosition(), cam);
         if (!mouse_offset.x && !mouse_offset.y) {
           mouse_offset = mouse;
@@ -204,8 +206,9 @@ void vv(char *prog_name, CDLLNode *img_paths) {
       {
         DrawTexture(texture, 0, 0, WHITE);
         memset(text, '\0', sizeof(text));
-        sprintf(text, "%lu/%lu", image_cursor + 1, image_count);
-        DrawText(text, 0, 0, 16, RED);
+        snprintf(text, sizeof(text), "%lu/%lu\t%s", image_cursor + 1,
+                 image_count, (char *)img_paths->data);
+        DrawText(text, 0, 0, 16, BLACK);
       }
       EndMode2D();
     }
