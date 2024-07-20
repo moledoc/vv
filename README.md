@@ -20,7 +20,7 @@ make PLATFORM=PLATFORM_DESKTOP
 ## Compiling
 
 ```sh
-cc -Wall -Wpedantic -o vv main.c ./raylib/src/*.o -I./raylib/src -L./raylib/src -lm -lpthread
+cc -Wall -Wpedantic -o vv main.c ./raylib/src/*.o -I./raylib/src -L./raylib/src -lm -lpthread -DSUPPORT_FILEFORMAT_JPG
 ```
 
 ## Author

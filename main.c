@@ -43,10 +43,17 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     printf("dir -- %s\n", path);
     break;
   case S_IFREG:
+#ifdef SUPPORT_FILEFORMAT_JPG
     if (strstr(path, ".png") == NULL && strstr(path, ".jpg") == NULL) {
-      printf("ignoring %s\n", path);
+      printf("ignoring file: %s\n", path);
       return cursor;
     }
+#else
+    if (strstr(path, ".png") == NULL) {
+      printf("ignoring file: %s\n", path);
+      return cursor;
+    }
+#endif // SUPPORT_FILEFORMAT_JPG
     printf("file -- %s\n", path);
     char *new_path = calloc(path_size + 1, sizeof(char));
     memcpy(new_path, path, path_size);
@@ -71,11 +78,18 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     if (strcmp(".", ep->d_name) == 0 || strcmp("..", ep->d_name) == 0) {
       continue;
     }
+#ifdef SUPPORT_FILEFORMAT_JPG
     if (strstr(ep->d_name, ".png") == NULL &&
         strstr(ep->d_name, ".jpg") == NULL) {
-      printf("ignoring %s\n", ep->d_name);
+      printf("ignoring file from dir: %s\n", path);
       continue;
     }
+#else
+    if (strstr(ep->d_name, ".png") == NULL) {
+      printf("ignoring file from dir: %s\n", path);
+      continue;
+    }
+#endif // SUPPORT_FILEFORMAT_JPG
     size_t ep_name_len = strlen(ep->d_name);
     size_t new_path_size = path_size + ep_name_len + 1;
     char *new_path = calloc(new_path_size + 1, sizeof(char));
@@ -222,6 +236,28 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
   return;
 }
 
+void help(char *prog_name) {
+  printf("NAME\n\t%s - image viewer\n", prog_name);
+  printf("\nSYNOPSIS\n\t%s <dir|file> ...\n", prog_name);
+  printf("\nOPTIONS\n");
+  printf("\t%s\n\t\tprint this help\n", "-h, -help, --help, help");
+  printf("\nUSAGE\n");
+  printf("\t* JPG are supported only when raylib is configure and rebuilt with "
+         "the jpg option enabled; see README\n");
+  printf("\t* q - close the application\n");
+  printf("\t* LEFT_MOUSE_BUTTON - go to previous image\n");
+  printf("\t* MIDDLE_MOUSE_BUTTON - drag current image\n");
+  printf("\t* MIDDLE_MOUSE_BUTTON scroll - zoom current image\n");
+  printf("\t* RIGHT_MOUSE_BUTTON - go to next image\n");
+  printf("\nEXAMPLES\n");
+  printf("\t* %s -h\n", prog_name);
+  printf("\t* %s $HOME/Pictures\n", prog_name);
+  printf("\t* %s $HOME/Pictures/example.png\n", prog_name);
+  printf("\t* %s $HOME/Pictures/example.jpg\n", prog_name);
+  printf("\nAUTHOR\n");
+  printf("\tMeelis Utt (meelis.utt@gmail.com)\n");
+}
+
 int main(int argc, char **argv) {
 
   char *prog_name = shift(&argc, &argv);
@@ -229,9 +265,16 @@ int main(int argc, char **argv) {
   CDLLNode *cdll = NULL;
   for (; argc;) {
     char *arg = shift(&argc, &argv);
+    if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0 ||
+        strcmp("help", arg) == 0) {
+      help(prog_name);
+      goto exit;
+    }
+
     cdll = get_files(cdll, arg);
   }
   cdll_list(cdll);
   viewer(prog_name, cdll);
+exit:
   cdll_nodes_free(cdll);
 }
