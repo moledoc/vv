@@ -44,24 +44,6 @@ CDLLNode *cdll_create(bool (*cmp)(void *, void *),
 // allocs memory
 CDLLNode *cdll_append(CDLLNode *cursor, void *data);
 
-/*
-// cdll_find searches linked list for provided data and returns the first found
-// instance
-// returns NULL if cursor is NULL
-CDLLNode *cdll_find(CDLLNode *cursor, void *data);
-
-// cdll_update replaces old_data with new_data on the first found instance
-// frees data
-// returns NULL if cursor is NULL
-CDLLNode *cdll_update(CDLLNode *cursor, void *old_data, void *new_data);
-*/
-
-// cdll_delete removes the node from the linked list
-// linked list is kept intact
-// returns NULL if cursor is NULL
-// frees memory
-CDLLNode *cdll_delete(CDLLNode *cursor, void *data);
-
 #endif // CIRCULAR_DOUBLY_LINKED_LIST // HEADER
 // }
 
