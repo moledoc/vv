@@ -185,7 +185,7 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
 
       float wheel = GetMouseWheelMove();
       if (wheel > 0) {
-        zoom += 0.1;
+        zoom *= 1.1;
         mouse = GetScreenToWorld2D(GetMousePosition(), cam);
         if (!mouse_offset.x && !mouse_offset.y) {
           mouse_offset = mouse;
@@ -193,7 +193,7 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
         target = Vector2Subtract(target, mouse);
         target = Vector2Add(target, mouse_offset);
       } else if (wheel < 0) {
-        zoom -= 0.1;
+        zoom = zoom * 0.9 > zoom_orig * 0.1 ? zoom * 0.9 : zoom;
         mouse = GetScreenToWorld2D(GetMousePosition(), cam);
         if (!mouse_offset.x && !mouse_offset.y) {
           mouse_offset = mouse;
