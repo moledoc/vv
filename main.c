@@ -210,9 +210,9 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
         target = Vector2Add(target, mouse_offset);
 
       } else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        image_cursor = (image_cursor - 1) % image_count;
-        if (image_cursor < 0) {
-          image_cursor = image_count - image_cursor;
+        image_cursor = image_cursor - 1;
+        if (image_cursor == -1) {
+          image_cursor = image_count - 1; // NOTE: account for +1 from below
         }
         img_paths = img_paths->prev;
         load_image(img_paths, img, &texture);
