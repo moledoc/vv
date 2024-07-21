@@ -149,7 +149,7 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
     return;
   }
   InitWindow(W_WIDTH, W_HEIGHT, prog_name);
-  SetTargetFPS(30);
+  SetTargetFPS(60);
   SetWindowMonitor(0);
 
   SetWindowState(FLAG_WINDOW_RESIZABLE);
