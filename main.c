@@ -136,8 +136,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
 
 void load_image(CDLLNode *img_paths, Image *img, Texture2D *texture) {
   assert(img && texture && "unexpected NULL");
-  UnloadImage(*img);
   UnloadTexture(*texture);
+  UnloadImage(*img);
   *img = LoadImage((char *)img_paths->data);
   assert(IsImageReady(*img));
   *texture = LoadTextureFromImage(*img);
@@ -224,6 +224,20 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
         load_image(img_paths, img, &texture);
         zoom = zoom_orig;
         target = target_orig;
+      } else if (IsKeyPressed(KEY_R) &&
+                 !(IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
+
+        UnloadTexture(texture);
+        ImageRotate(img, 90);
+        assert(IsImageReady(*img));
+        texture = LoadTextureFromImage(*img);
+      } else if (IsKeyPressed(KEY_R) &&
+                 (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
+
+        UnloadTexture(texture);
+        ImageRotate(img, -90);
+        assert(IsImageReady(*img));
+        texture = LoadTextureFromImage(*img);
       } else {
         mouse_offset = (Vector2){0};
       }
