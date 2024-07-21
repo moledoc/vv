@@ -138,8 +138,19 @@ CDLLNode *cdll_append(CDLLNode *cursor, void *data) {
 
   CDLLNode *cur = cursor;
   for (; cur->next != cursor; cur = cur->next) {
-    ;
+    if (cur->cmp(cur->data, data)) {
+      printf("already listed:");
+      cur->print(cur);
+      return cursor;
+    };
   }
+
+  if (cur->cmp(cur->data, data)) {
+    printf("already listed:");
+    cur->print(cur);
+    return cursor;
+  };
+
   CDLLNode *new = cdll_create(cursor->cmp, cursor->print, cursor->free_data,
                               cur, cur->next, data);
   cur->next = new;
