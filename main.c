@@ -276,6 +276,8 @@ void help(char *prog_name) {
   printf("\t%s\n\t\tprint this help\n", "-h, -help, --help, help");
   printf("\nUSAGE\n");
   printf("\t* q\n\t\tclose the application\n");
+  printf("\t* r/shift+r\n\t\trotate image clockwise/counter-clockwise\n");
+  printf("\t* =\n\t\treset image\n");
   printf("\t* LEFT_MOUSE_BUTTON\n\t\tgo to previous image\n");
   printf("\t* MIDDLE_MOUSE_BUTTON\n\t\tdrag current image\n");
   printf("\t* scroll MIDDLE_MOUSE_BUTTON\n\t\tzoom in/out current image\n");
