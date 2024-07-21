@@ -271,9 +271,9 @@ void help(char *prog_name) {
   printf("\nDESCRIPTION\n\t%s is a simple image viewer written in C using "
          "raylib\n",
          prog_name);
-  printf("\nSYNOPSIS\n\t%s <dir|file> ...\n", prog_name);
+  printf("\nSYNOPSIS\n\t%s [OPTIONS] <dir|file> ...\n", prog_name);
   printf("\nOPTIONS\n");
-  printf("\t%s\n\t\tprint this help\n", "-h, -help, --help, help");
+  printf("\t* %s\n\t\tprint this help\n", "-h, -help, --help, help");
   printf("\nUSAGE\n");
   printf("\t* q\n\t\tclose the application\n");
   printf("\t* r/shift+r\n\t\trotate image clockwise/counter-clockwise\n");
@@ -288,10 +288,11 @@ void help(char *prog_name) {
   printf("\nEXAMPLES\n");
   printf("\t* %s help\n", prog_name);
   printf("\t* %s $HOME/Pictures\n", prog_name);
+  printf("\t* %s $HOME/Pictures $HOME/Pictures # no duplicates\n", prog_name);
   printf("\t* %s $HOME/Pictures/example.png\n", prog_name);
-  printf(
-      "\t* %s $HOME/Pictures/example.jpg # requires jpg support; see README\n",
-      prog_name);
+  printf("\t* %s $HOME/Pictures/example.jpg $HOME/Pictures/example.jpeg # "
+         "requires jpg support; see README\n",
+         prog_name);
   printf("\nAUTHOR\n");
   printf("\tMeelis Utt (meelis.utt@gmail.com)\n");
 }

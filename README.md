@@ -39,6 +39,38 @@ Compiling `vv` without jpg support
 cc -Wall -Wpedantic -o vv main.c -I./raylib-5.0_linux_amd64/include -L./raylib-5.0_linux_amd64/lib -l:libraylib.a -lm -lpthread
 ```
 
+## Synopsis
+
+```sh
+vv [OPTIONS] <dir|file> ...
+```
+
+## Options
+
+```verbatim
+* -h, -help, --help, help
+	print this help
+```
+
+## Usage
+
+```verbatim
+* q
+	close the application
+* r/shift+r
+	rotate image clockwise/counter-clockwise
+* =
+	reset image
+* LEFT_MOUSE_BUTTON
+	go to previous image
+* MIDDLE_MOUSE_BUTTON
+	drag current image
+* scroll MIDDLE_MOUSE_BUTTON
+	zoom in/out current image
+* RIGHT_MOUSE_BUTTON
+	go to next image
+```
+
 ## Author
 
 Meelis Utt
