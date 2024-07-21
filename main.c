@@ -49,7 +49,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     break;
   case S_IFREG:
 #ifdef SUPPORT_FILEFORMAT_JPG
-    if (strstr(path, ".png") == NULL && strstr(path, ".jpg") == NULL) {
+    if (strstr(path, ".png") == NULL && strstr(path, ".jpg") == NULL &&
+        strstr(path, ".jpeg") == NULL) {
       printf("ignoring file: %s\n", path);
       return cursor;
     }
@@ -85,7 +86,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     }
 #ifdef SUPPORT_FILEFORMAT_JPG
     if (strstr(ep->d_name, ".png") == NULL &&
-        strstr(ep->d_name, ".jpg") == NULL) {
+        strstr(ep->d_name, ".jpg") == NULL &&
+        strstr(ep->d_name, ".jpeg") == NULL) {
       printf("ignoring file from dir: %s\n", path);
       continue;
     }
