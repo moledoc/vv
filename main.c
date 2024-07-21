@@ -226,18 +226,20 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
         target = target_orig;
       } else if (IsKeyPressed(KEY_R) &&
                  !(IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
-
         UnloadTexture(texture);
         ImageRotate(img, 90);
         assert(IsImageReady(*img));
         texture = LoadTextureFromImage(*img);
       } else if (IsKeyPressed(KEY_R) &&
                  (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
-
         UnloadTexture(texture);
         ImageRotate(img, -90);
         assert(IsImageReady(*img));
         texture = LoadTextureFromImage(*img);
+      } else if (IsKeyPressed(KEY_EQUAL)) {
+        load_image(img_paths, img, &texture);
+        zoom = zoom_orig;
+        target = target_orig;
       } else {
         mouse_offset = (Vector2){0};
       }
