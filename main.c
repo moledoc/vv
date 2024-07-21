@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <dirent.h>
+#include <libgen.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,7 +62,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     }
 #endif // SUPPORT_FILEFORMAT_JPG
     printf("file -- %s\n", path);
-    char *new_path = calloc(path_size + 1, sizeof(char));
+    char *new_path =
+        calloc(path_size + 1, sizeof(char)); // NOTE: freed in cdll_nodes_free
     memcpy(new_path, path, path_size);
     if (cursor) {
       cursor = cdll_append(cursor, (void *)new_path);
@@ -69,7 +71,16 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
       cursor = cdll_create(cmp_data, print_data, free_data, NULL, NULL,
                            (void *)new_path);
     }
-    return cursor;
+
+    // NOTE: file proximity feature:
+    // if file provided, check the dir for other images.
+    // reason: in file explorer, go to dir, click on file and browse the
+    // directory
+    char *path_cpy = strdup(path);
+    path = dirname(path_cpy);
+    path_size = strlen(path);
+    printf("dir -- %s\n", path);
+    break;
   default:
     printf("unsupported filetype: %u\n", st.st_mode & S_IFMT); // see stat(2)
     return cursor;
@@ -99,7 +110,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
 #endif // SUPPORT_FILEFORMAT_JPG
     size_t ep_name_len = strlen(ep->d_name);
     size_t new_path_size = path_size + ep_name_len + 1;
-    char *new_path = calloc(new_path_size + 1, sizeof(char));
+    char *new_path = calloc(new_path_size + 1,
+                            sizeof(char)); // NOTE: freed in cdll_nodes_free
     new_path[new_path_size] = '\0';
 
     memcpy(new_path, path, path_size);
