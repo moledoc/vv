@@ -136,8 +136,8 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
 
 void load_image(CDLLNode *img_paths, Image *img, Texture2D *texture) {
   assert(img && texture && "unexpected NULL");
-  UnloadImage(*img);
   UnloadTexture(*texture);
+  UnloadImage(*img);
   *img = LoadImage((char *)img_paths->data);
   assert(IsImageReady(*img));
   *texture = LoadTextureFromImage(*img);
@@ -224,6 +224,22 @@ void viewer(char *prog_name, CDLLNode *img_paths) {
         load_image(img_paths, img, &texture);
         zoom = zoom_orig;
         target = target_orig;
+      } else if (IsKeyPressed(KEY_R) &&
+                 !(IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
+        UnloadTexture(texture);
+        ImageRotate(img, 90);
+        assert(IsImageReady(*img));
+        texture = LoadTextureFromImage(*img);
+      } else if (IsKeyPressed(KEY_R) &&
+                 (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
+        UnloadTexture(texture);
+        ImageRotate(img, -90);
+        assert(IsImageReady(*img));
+        texture = LoadTextureFromImage(*img);
+      } else if (IsKeyPressed(KEY_EQUAL)) {
+        load_image(img_paths, img, &texture);
+        zoom = zoom_orig;
+        target = target_orig;
       } else {
         mouse_offset = (Vector2){0};
       }
@@ -260,6 +276,8 @@ void help(char *prog_name) {
   printf("\t%s\n\t\tprint this help\n", "-h, -help, --help, help");
   printf("\nUSAGE\n");
   printf("\t* q\n\t\tclose the application\n");
+  printf("\t* r/shift+r\n\t\trotate image clockwise/counter-clockwise\n");
+  printf("\t* =\n\t\treset image\n");
   printf("\t* LEFT_MOUSE_BUTTON\n\t\tgo to previous image\n");
   printf("\t* MIDDLE_MOUSE_BUTTON\n\t\tdrag current image\n");
   printf("\t* scroll MIDDLE_MOUSE_BUTTON\n\t\tzoom in/out current image\n");
