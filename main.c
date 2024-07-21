@@ -64,7 +64,7 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     char *new_path = calloc(path_size + 1, sizeof(char));
     memcpy(new_path, path, path_size);
     if (cursor) {
-      cdll_append(cursor, (void *)new_path);
+      cursor = cdll_append(cursor, (void *)new_path);
     } else {
       cursor = cdll_create(cmp_data, print_data, free_data, NULL, NULL,
                            (void *)new_path);
@@ -110,7 +110,7 @@ CDLLNode *get_files(CDLLNode *cursor, char *path) {
     case DT_REG:
       printf("file - %s\n", new_path);
       if (cursor) {
-        cdll_append(cursor, (void *)new_path);
+        cursor = cdll_append(cursor, (void *)new_path);
       } else {
         cursor = cdll_create(cmp_data, print_data, free_data, NULL, NULL,
                              (void *)new_path);
